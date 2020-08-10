@@ -3,8 +3,8 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ClientHandler {
-    private final NetworkServer networkServer;
+public class Delete_ClientHandler {
+    private final Delete_NetworkServer networkServer;
     private final Socket clientSocket;
     private String loginFolder;
     private String login = "unlogin";
@@ -12,7 +12,7 @@ public class ClientHandler {
     private DataInputStream in;
     private DataOutputStream out;
 
-    public ClientHandler(NetworkServer networkServer, Socket clientSocket) {
+    public Delete_ClientHandler(Delete_NetworkServer networkServer, Socket clientSocket) {
         this.networkServer = networkServer;
         this.clientSocket = clientSocket;
         this.loginFolder = networkServer.getRootFolder();
@@ -23,6 +23,7 @@ public class ClientHandler {
     }
 
     private void doHandle(Socket socket) {
+
         try {
             out = new DataOutputStream(socket.getOutputStream());
             in = new DataInputStream(socket.getInputStream());
