@@ -6,7 +6,9 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="network_storage_java" />
+        <module name="common" />
+        <module name="cloud_client" />
+        <module name="cloud_server" />
       </profile>
     </annotationProcessing>
   </component>
