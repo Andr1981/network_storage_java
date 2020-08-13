@@ -2,11 +2,11 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class NetworkServer {
+public class Delete_NetworkServer {
     private int port;
     private String rootFolder;
 
-    public NetworkServer(int port, String rootFolder) {
+    public Delete_NetworkServer(int port, String rootFolder) {
         this.port = port;
         this.rootFolder = rootFolder;
     }
@@ -31,8 +31,7 @@ public class NetworkServer {
     }
 
     private void createClientHandler(Socket clientSocket) {
-        ClientHandler clientHandler = new ClientHandler(this, clientSocket);
+        Delete_ClientHandler clientHandler = new Delete_ClientHandler(this, clientSocket);
         clientHandler.run();
     }
-
 }
