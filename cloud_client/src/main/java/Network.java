@@ -1,4 +1,3 @@
-import callback.Callback;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -15,20 +14,17 @@ import java.net.InetSocketAddress;
 public class Network {
     private String serverName;
     private int serverPort;
-    private Channel currentChannel;
+    private FileTransfer fileTransfer;
     private static Network ourInstance = new Network();
-    private Callback authCallBack, getFileListCallBack, downloadFileCallBack, uploadFileCallBack, errorCallBack;
+    private Channel currentChannel;
+    private Callback authCallBack, downloadFileCallBack, uploadFileCallBack;
 
-    public void setGetFileListCallBack(Callback getFileListCallBack) {
-        this.getFileListCallBack = getFileListCallBack;
+    public FileTransfer getFileTransfer() {
+        return fileTransfer;
     }
 
     public void setAuthCallBack(Callback authCallBack) {
         this.authCallBack = authCallBack;
-    }
-
-    public void setErrorCallBack(Callback errorCallBack) {
-        this.errorCallBack = errorCallBack;
     }
 
     public void setDownloadFileCallBack(Callback downloadFileCallBack) {
@@ -42,6 +38,7 @@ public class Network {
     private Network(String serverName, int serverPort) {
         this.serverName = serverName;
         this.serverPort = serverPort;
+        this.fileTransfer = new FileTransfer();
         new Thread(()-> start()).start();
     }
 
@@ -68,7 +65,7 @@ public class Network {
                     .handler(new ChannelInitializer<SocketChannel>() {
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             currentChannel = socketChannel;
-                            socketChannel.pipeline().addLast(new ServerHandler(authCallBack, getFileListCallBack, downloadFileCallBack, uploadFileCallBack, errorCallBack));
+                            socketChannel.pipeline().addLast(new ServerHandler(fileTransfer, authCallBack,  downloadFileCallBack, uploadFileCallBack));
                         }
                     });
             ChannelFuture channelFuture = clientBootstrap.connect().sync();

@@ -1,29 +1,32 @@
-import callback.Callback;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
 import java.io.RandomAccessFile;
-import java.nio.charset.StandardCharsets;
+import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
+
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
-    private Callback authCallBack, getFileListCallBack, downloadFileCallBack, uploadFileCallBack, errorCallBack;
+    private FileTransfer fileTransfer;
+    private Callback authCallBack, downloadFileCallBack, uploadFileCallBack, errorCallBack;
     private Command currentCommand = Command.NO_COMMAND;
     private JobStage currentStage = JobStage.STANDBY;
     private int lengthInt;
     private String currentFolder, currentFilename;
     private long currentFileLength;
+    private Path downloadFile;
+    private RandomAccessFile aFile;
+    private FileChannel inChannel;
+    private long counter = 0;
+    private int tempCount = 0;
 
-    public ServerHandler(Callback authCallBack,Callback getFileListCallBack,Callback downloadFileCallBack, Callback uploadFileCallBack, Callback errorCallBack) {
+    public ServerHandler(FileTransfer fileTransfer, Callback authCallBack, Callback downloadFileCallBack, Callback uploadFileCallBack) {
+        this.fileTransfer = fileTransfer;
         this.authCallBack = authCallBack;
-        this.getFileListCallBack = getFileListCallBack;
         this.downloadFileCallBack = downloadFileCallBack;
         this.uploadFileCallBack = uploadFileCallBack;
-        this.errorCallBack = errorCallBack;
         this.currentFolder = "clientFolder";
     }
 
@@ -32,7 +35,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         ByteBuf buf = ((ByteBuf) msg);
         while (buf.readableBytes() > 0) {
             //определение входящей команды
-            if (currentStage == JobStage.STANDBY) {
+            if(currentStage == JobStage.STANDBY) {
                 currentCommand = CommandUtility.getCommand(buf.readByte());
 
                 switch (currentCommand) {
@@ -41,8 +44,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                             authCallBack.call();
                         break;
                     case ERROR_SERVER:
-                        if(errorCallBack!=null)
-                            errorCallBack.call();
+                        currentStage =  JobStage.GET_ERROR_LENGTH;
                         break;
                     case RETURN_FILE_LIST:
                         currentStage = JobStage.GET_FILE_LIST_LENGTH;
@@ -50,37 +52,27 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                     case DOWNLOAD_FILE_PROCESS:
                         currentStage = JobStage.GET_FILE_NAME_LENGTH;
                         break;
+                    case DELETE_SUCCESS:
+                        currentStage = JobStage.GET_FILE_NAME_LENGTH;
+                        break;
                 }
             }
 
-            if (currentCommand == Command.RETURN_FILE_LIST){
+            if(currentCommand == Command.ERROR_SERVER){
+                currentStage = fileTransfer.readErrorMessage(buf, currentStage);
+            }
 
-                if(currentStage == JobStage.GET_FILE_LIST_LENGTH){
-                    if (buf.readableBytes() >= 4) {
-                        lengthInt = buf.readInt();
-                        currentStage = JobStage.GET_FILE_LIST;
-                    }
-                }
-
-                if(currentStage == JobStage.GET_FILE_LIST){
-                    if (buf.readableBytes() >= lengthInt) {
-                        byte[] arrayFilesByte = new byte[lengthInt];
-                        buf.readBytes(arrayFilesByte);
-                        String[] arrayFiles = new String(arrayFilesByte, StandardCharsets.UTF_8).split("/");
-
-                        List<String> listFiles = Arrays.asList(arrayFiles);
-                        getFileListCallBack.call(listFiles);
-                        currentStage = JobStage.STANDBY;
-                        currentCommand = Command.NO_COMMAND;
-                    }
-                }
+            if(currentCommand == Command.RETURN_FILE_LIST){
+                currentStage = fileTransfer.returnFileList(buf, currentStage);
             }
 
             if(currentCommand == Command.DOWNLOAD_FILE_PROCESS){
 
-                if (buf.readableBytes() >= 4) {
-                    lengthInt = buf.readInt();
-                    currentStage = JobStage.GET_FILE_NAME;
+                if(currentStage==JobStage.GET_FILE_NAME_LENGTH){
+                    if (buf.readableBytes() >= 4) {
+                        lengthInt = buf.readInt();
+                        currentStage = JobStage.GET_FILE_NAME;
+                    }
                 }
 
                 if(currentStage == JobStage.GET_FILE_NAME){
@@ -96,18 +88,34 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                     if (buf.readableBytes() >= 8) {
                         currentFileLength = buf.readLong();
                         currentStage = JobStage.GET_FILE;
+
+                        downloadFile = Paths.get(currentFolder, currentFilename);
+                        aFile = new RandomAccessFile(downloadFile.toFile(), "rw");
+                        inChannel = aFile.getChannel();
+                        counter = 0;
+                        tempCount = 0;
                     }
                 }
 
                 if(currentStage == JobStage.GET_FILE){
-                    Path downloadFile = Paths.get(currentFolder, currentFilename);
-                    RandomAccessFile aFile = new RandomAccessFile(downloadFile.toFile(), "w");
-                    long counter = 0;
-                    while (buf.readableBytes()>0 && counter <= currentFileLength){
 
+                    while (buf.readableBytes()>0 && counter < currentFileLength){
+                        tempCount = inChannel.write(buf.nioBuffer());
+                        counter = counter + tempCount;
+                        buf.readerIndex(buf.readerIndex() + tempCount);//-> buf.readableBytes()=0
+                    }
+
+                    if(counter == currentFileLength) {
+                        aFile.close();
+                        currentStage = JobStage.STANDBY;
+                        currentCommand = Command.NO_COMMAND;
                     }
 
                 }
+            }
+
+            if(currentCommand == Command.DELETE_SUCCESS){
+                currentStage = fileTransfer.returnDeleteFile(buf, currentStage);
             }
 
             if (buf.readableBytes() == 0) {
