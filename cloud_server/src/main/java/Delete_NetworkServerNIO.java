@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class NetworkServerNIO implements Runnable {
+public class Delete_NetworkServerNIO implements Runnable {
     private int port;
     private String rootFolder;
 
@@ -21,7 +21,7 @@ public class NetworkServerNIO implements Runnable {
     private int acceptedClientIndex = 1;
     private Map<String, String> clients = new HashMap<>();
 
-    public NetworkServerNIO(int port, String rootFolder) throws IOException {
+    public Delete_NetworkServerNIO(int port, String rootFolder) throws IOException {
         this.port = port;
         this.rootFolder = rootFolder;
         this.server = ServerSocketChannel.open();

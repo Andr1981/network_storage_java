@@ -1,0 +1,22 @@
+public enum JobStage {
+    STANDBY,
+
+    GET_LENGTH_LOGIN,
+    GET_LOGIN,
+    GET_LENGTH_PASS,
+    GET_PASS,
+
+    GET_FILE_LIST_LENGTH,
+    GET_FILE_LIST,
+
+    GET_FILE_NAME_LENGTH,
+    GET_FILE_NAME,
+    CHECK_FILE,
+
+    GET_FILE_LENGTH,
+    GET_FILE
+
+
+
+    ;
+}
