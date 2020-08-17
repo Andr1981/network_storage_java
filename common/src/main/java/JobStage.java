@@ -14,6 +14,7 @@ public enum JobStage {
     CHECK_FILE,
 
     GET_FILE_LENGTH,
+    START_FILE_OPERATION,
     GET_FILE,
 
     GET_ERROR_LENGTH,

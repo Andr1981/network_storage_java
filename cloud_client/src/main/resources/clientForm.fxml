@@ -3,72 +3,83 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
-<AnchorPane id="mainPane" prefHeight="400.0" prefWidth="623.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ClientController">
-    <children>
-        <MenuBar prefHeight="25.0" prefWidth="623.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-            <menus>
-                <Menu mnemonicParsing="false" text="File">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="Close" />
-                    </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="Delete" />
-                    </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Help">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                    </items>
-                </Menu>
-            </menus>
-        </MenuBar>
-        <AnchorPane id="loginPane" fx:id="loginPane" layoutY="25.0" prefHeight="40.0" prefWidth="623.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
-            <children>
-                <Label layoutX="14.0" layoutY="8.0" prefHeight="25.0" prefWidth="46.0" text="Login" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="6.0">
-                    <font>
-                        <Font size="14.0" />
-                    </font>
-                </Label>
-                <TextField fx:id="loginText" layoutX="68.0" layoutY="5.0" prefHeight="25.0" prefWidth="149.0" promptText="введите логин" AnchorPane.bottomAnchor="4.0" AnchorPane.topAnchor="6.0">
-                    <font>
-                        <Font size="14.0" />
-                    </font></TextField>
-                <Label layoutX="242.0" layoutY="8.0" prefHeight="25.0" prefWidth="66.0" text="Password" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="242.0" AnchorPane.rightAnchor="315.0" AnchorPane.topAnchor="6.0">
-                    <font>
-                        <Font size="14.0" />
-                    </font>
-                </Label>
-                <PasswordField fx:id="passText" layoutX="325.0" layoutY="6.0" prefHeight="30.0" prefWidth="149.0">
-                    <font>
-                        <Font size="14.0" />
-                    </font>
-                </PasswordField>
-                <Button fx:id="btnLogin" layoutX="530.0" layoutY="6.0" mnemonicParsing="false" onAction="#btnLoginOnAction" prefHeight="30.0" prefWidth="91.0" text="Log in" AnchorPane.bottomAnchor="4.0" AnchorPane.topAnchor="6.0">
-                    <font>
-                        <Font size="14.0" />
-                    </font>
-                </Button>
-            </children>
+<VBox prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ClientController">
+    <MenuBar>
+        <Menu text="Файл">
+            <MenuItem text="Выйти из программы" />
+        </Menu>
+    </MenuBar>
+
+    <HBox fx:id="loginPane" spacing="5">
+        <Label prefHeight="22.0" prefWidth="30.0" text="Login" HBox.hgrow="ALWAYS">
+
+        </Label>
+        <TextField fx:id="loginText" promptText="введите логин" HBox.hgrow="ALWAYS">
+        </TextField>
+        <Label prefHeight="26.0" prefWidth="50.0" text="Password" HBox.hgrow="ALWAYS">
+
+        </Label>
+        <PasswordField fx:id="passText" HBox.hgrow="ALWAYS">
+
+        </PasswordField>
+        <Button fx:id="btnLogin" onAction="#btnLoginOnAction" text="Log in" HBox.hgrow="ALWAYS">
+
+        </Button>
+        <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+        </padding>
+    </HBox>
+
+
+    <HBox VBox.vgrow="ALWAYS">
+        <VBox spacing="5" HBox.hgrow="ALWAYS">
+            <HBox spacing="5">
+                <TextField editable="false" HBox.hgrow="ALWAYS">
+                </TextField>
+                <Button text="Вверх" />
+            </HBox>
+
+            <TableView fx:id="listServerFiles" VBox.vgrow="ALWAYS">
+
+            </TableView>
+        </VBox>
+        <VBox spacing="5">
+            <Button fx:id="btnDownload" maxWidth="Infinity" onAction="#btnDownloadOnAction" text="Загрузить" textAlignment="CENTER">
+
+            </Button>
+            <Button fx:id="btnUpload" maxWidth="Infinity" onAction="#btnUploadOnAction" text="Выгрузить" textAlignment="CENTER">
+
+            </Button>
+            <Button fx:id="btnDelete" maxWidth="Infinity" onAction="#btnDeleteOnAction" text="Удалить" textAlignment="CENTER">
+
+            </Button>
+            <Button fx:id="btnRefresh" maxWidth="Infinity" onAction="#btnRefreshOnAction" text="Обновить" textAlignment="CENTER">
+
+            </Button>
             <padding>
-                <Insets left="10.0" right="10.0" />
+                <Insets bottom="5.0" left="5.0" right="5.0" top="25.0" />
             </padding>
-        </AnchorPane>
-        <AnchorPane id="mainListPane" layoutY="104.0" prefHeight="297.0" prefWidth="623.0">
-            <children>
-                <ListView fx:id="listServerFiles" layoutX="14.0" layoutY="12.0" prefHeight="266.0" prefWidth="186.0" />
-                <Button fx:id="btnDownload" layoutX="209.0" layoutY="14.0" mnemonicParsing="false" onAction="#btnDownloadOnAction" prefHeight="25.0" prefWidth="77.0" text="Download" />
-                <Button fx:id="btnUpload" layoutX="209.0" layoutY="49.0" mnemonicParsing="false" onAction="#btnUploadOnAction" prefHeight="25.0" prefWidth="77.0" text="Upload" />
-                <Button fx:id="btnDelete" layoutX="209.0" layoutY="85.0" mnemonicParsing="false" onAction="#btnDeleteOnAction" prefHeight="25.0" prefWidth="77.0" text="Delete" />
-                <Button fx:id="btnRefresh" layoutX="209.0" layoutY="122.0" mnemonicParsing="false" onAction="#btnRefreshOnAction" prefHeight="25.0" prefWidth="77.0" text="Refresh" />
-                <ListView fx:id="listClientFiles" layoutX="297.0" layoutY="12.0" prefHeight="266.0" prefWidth="325.0" />
-            </children>
-            <padding>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-            </padding>
-        </AnchorPane>
-    </children>
-</AnchorPane>
+            <HBox.margin>
+                <Insets />
+            </HBox.margin>
+        </VBox>
+        <VBox spacing="5" HBox.hgrow="ALWAYS">
+            <HBox spacing="5">
+                <ComboBox>
+                </ComboBox>
+                <TextField editable="false" HBox.hgrow="ALWAYS">
+                </TextField>
+                <Button text="Вверх" />
+            </HBox>
+
+            <TableView fx:id="listClientFiles" VBox.vgrow="ALWAYS">
+
+            </TableView>
+        </VBox>
+        <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+        </padding>
+    </HBox>
+    <ProgressBar fx:id="progress" maxWidth="Infinity" />
+</VBox>

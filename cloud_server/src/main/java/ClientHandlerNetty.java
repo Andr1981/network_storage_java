@@ -44,6 +44,11 @@ public class ClientHandlerNetty extends ChannelInboundHandlerAdapter {
     }
 
     @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("Клиент подключился");
+    }
+
+    @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf buf = ((ByteBuf) msg);
 
@@ -345,7 +350,9 @@ public class ClientHandlerNetty extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        cause.printStackTrace();
+
+        System.out.println("Клиент отключился");
+
         ctx.close();
     }
 }
