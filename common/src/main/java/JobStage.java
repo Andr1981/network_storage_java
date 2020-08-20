@@ -5,6 +5,7 @@ public enum JobStage {
     GET_LOGIN,
     GET_LENGTH_PASS,
     GET_PASS,
+    LOG_IN,
 
     GET_FILE_LIST_LENGTH,
     GET_FILE_LIST,
@@ -19,8 +20,6 @@ public enum JobStage {
 
     GET_ERROR_LENGTH,
     GET_ERROR_MESSAGE
-
-
 
     ;
 }

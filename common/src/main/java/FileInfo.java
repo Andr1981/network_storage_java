@@ -69,4 +69,9 @@ public class FileInfo {
             throw new RuntimeException("Ошибка чтения файла");
         }
     }
+
+    public FileInfo(String filename){
+        this.filename = filename;
+        this.type = FileType.FILE;
+    }
 }
